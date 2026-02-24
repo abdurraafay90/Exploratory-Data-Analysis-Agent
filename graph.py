@@ -6,23 +6,19 @@ from langchain_core.messages import AnyMessage, SystemMessage
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.checkpoint.memory import MemorySaver
 from langchain_openai import ChatOpenAI
 
 from tools import execute_pandas_code
-
 load_dotenv()
 
-# ---------------------------------------------------------
-# 1. Define the State Structure
-# ---------------------------------------------------------
 class GraphState(TypedDict):
     """
     This dictionary is passed continuously between nodes.
     'add_messages' ensures new messages are appended, not overwritten.
     """
     messages: Annotated[list[AnyMessage], add_messages]
-    schema: str  # We will inject the df.dtypes and df.head() here
-
+    schema: str  
 
 llm = ChatOpenAI(model="gpt-5-nano")
 tools = [execute_pandas_code]
@@ -35,7 +31,7 @@ def agent_node(state: GraphState):
     """
     messages = state["messages"]
     df_schema = state.get("schema", "No dataframe schema provided.")
-    
+
     sys_prompt = SystemMessage(
         content=f"""You are an expert Data Scientist agent.
         You have access to a Pandas DataFrame named 'df'.
@@ -54,7 +50,6 @@ def agent_node(state: GraphState):
     )
     
     response = llm_with_tools.invoke([sys_prompt] + messages)
-    
     return {"messages": [response]}
 
 builder = StateGraph(GraphState)
@@ -62,11 +57,12 @@ builder = StateGraph(GraphState)
 builder.add_node("agent", agent_node)
 builder.add_node("tools", ToolNode(tools))
 
-
 builder.add_edge(START, "agent")
 
 builder.add_conditional_edges("agent", tools_condition)
 
 
 builder.add_edge("tools", "agent")
-eda_agent = builder.compile()
+
+memory = MemorySaver()
+eda_agent = builder.compile(checkpointer=memory)
