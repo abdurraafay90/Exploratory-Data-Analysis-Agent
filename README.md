@@ -2,6 +2,18 @@
 
 An intelligent, autonomous Exploratory Data Analysis (EDA) tool built with **Streamlit**, **LangGraph**, and **OpenAI**. This agent acts as your personal Data Scientist: upload a CSV, ask questions in plain English, and the agent will dynamically write and execute Python code to analyze your data and generate visual plots.
 
+## 🛠️ Tech Stack & Technologies Used
+
+| Technology | Category | Purpose in Project |
+| :--- | :--- | :--- |
+| **Python** | Core Language | The primary programming language used for the backend logic and tool execution. |
+| **Streamlit** | Frontend Framework | Provides the interactive web interface, chat UI, and handles user file uploads. |
+| **LangGraph** | Agent Architecture | Manages the stateful flow, memory, and logic loops of the autonomous agent. |
+| **LangChain** | LLM Framework | Orchestrates the connection between the LLM, the system prompt, and the custom tools. |
+| **OpenAI API** | Large Language Model | Powers the agent's reasoning, code generation, and conversational abilities. |
+| **Pandas** | Data Analysis | Used within the execution tool to read, manipulate, and analyze the uploaded CSV data. |
+| **Matplotlib** | Data Visualization | Generates the charts and graphs requested by the user, which are then routed to the UI. |
+
 ## 🎥 Demo
 ![EDA Agent Demo](Animation.gif)
 
@@ -49,12 +61,7 @@ OPENAI_API_KEY=your_api_key_here
 streamlit run app.py
 ```
 
-### 4️⃣ Open in Browser
-After running the command, open your browser and go to:
 
-```
-http://localhost:8501
-```
 
 ### 5️⃣ How to Use
 - Upload a CSV file using the sidebar.
